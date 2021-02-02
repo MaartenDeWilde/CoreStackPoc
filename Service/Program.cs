@@ -1,6 +1,7 @@
 ﻿using Logic.Db;
 using Logic.Model;
 using System;
+using System.Collections.Generic;
 
 namespace Service
 {
@@ -12,7 +13,15 @@ namespace Service
             {
                 var invoice = new Invoice
                 {
-                    Customer = "Somecustomer"
+                    Customer = "Somecustomer2",
+                    Items = new List<InvoiceItem>
+                    {
+                       new InvoiceItem
+                       {
+                           Name = "Do stuff",
+                           Price = 500M
+                       }
+                    }
                 };
                 context.Invoices.Add(invoice);
                 context.SaveChanges();
