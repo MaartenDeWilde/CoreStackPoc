@@ -6,7 +6,7 @@ namespace Logic.Model
 {
     public class Invoice
     {
-        public string Number { get; set; }
+        public int Id { get; set; }
 
         public string Customer { get; set; }
 
