@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Logic.Db;
+using Logic.Model;
+using System;
 
 namespace Service
 {
@@ -6,7 +8,15 @@ namespace Service
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            using(var context = new InvoiceContext())
+            {
+                var invoice = new Invoice
+                {
+                    Customer = "Somecustomer"
+                };
+                context.Invoices.Add(invoice);
+                context.SaveChanges();
+            }
         }
     }
 }
