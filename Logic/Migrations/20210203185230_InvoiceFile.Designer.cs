@@ -3,14 +3,16 @@ using System;
 using Logic.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Logic.Migrations
 {
     [DbContext(typeof(InvoiceContext))]
-    partial class InvoiceContextModelSnapshot : ModelSnapshot
+    [Migration("20210203185230_InvoiceFile")]
+    partial class InvoiceFile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,7 +30,7 @@ namespace Logic.Migrations
                         .HasColumnType("text");
 
                     b.Property<byte[]>("File")
-                        .HasColumnType("blob");
+                        .HasColumnType("varbinary(4000)");
 
                     b.HasKey("Id");
 

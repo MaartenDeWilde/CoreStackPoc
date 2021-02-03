@@ -28,6 +28,7 @@ namespace Logic.Db
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Customer).IsRequired();
+                entity.Property(e => e.File).HasColumnType("blob");
                 entity.HasMany(e => e.Items);
             });
 

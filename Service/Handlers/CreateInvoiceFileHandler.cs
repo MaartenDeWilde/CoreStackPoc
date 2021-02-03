@@ -1,6 +1,8 @@
-﻿using Messages;
+﻿using Logic.Db;
+using Messages;
 using NServiceBus;
-using System;
+using SpreadsheetLight;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Service.Handlers
@@ -9,7 +11,20 @@ namespace Service.Handlers
     {
         public Task Handle(CreateInvoiceFile message, IMessageHandlerContext context)
         {
-            throw new NotImplementedException();
+            using (var dataContext = new InvoiceContext())
+            {
+                var invoice = dataContext.Invoices.Find(message.InvoiceId);
+                var memoryStream = new MemoryStream();
+                using (var document = new SLDocument())
+                {
+                    document.SetCellValue("A1", invoice.Customer);
+                    document.SaveAs(memoryStream);
+                }
+                memoryStream.Position = 0;
+                invoice.File = memoryStream.ToArray();
+                dataContext.SaveChanges();
+            }
+            return Task.CompletedTask;
         }
     }
 }

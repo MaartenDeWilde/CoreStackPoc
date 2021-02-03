@@ -12,6 +12,8 @@ namespace Logic.Model
 
         public virtual ICollection<InvoiceItem> Items { get; set; }
 
+        public byte[] File { get; set; }
+
     }
 
     public class InvoiceItem
@@ -20,4 +22,5 @@ namespace Logic.Model
         public string Name { get; set; }
         public decimal Price { get; set; }
     }
+
 }
