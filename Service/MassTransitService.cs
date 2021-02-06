@@ -1,5 +1,7 @@
-﻿using MassTransit;
+﻿using Logic.DI;
+using MassTransit;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Service.Handlers;
 using System;
@@ -10,29 +12,17 @@ namespace Service
 {
     public class MassTransitService : IHostedService
     {
-        private readonly IConfiguration configuration;
         private IBusControl _busControl;
 
-        public MassTransitService(IConfiguration configuration)
+        public MassTransitService(IBusControl busControl)
         {
-            this.configuration = configuration;
+            _busControl = busControl;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _busControl = Bus.Factory.CreateUsingRabbitMq(cfg =>
-            {
-                cfg.Host(configuration.GetConnectionString("RabbitMQ"));
-                cfg.ReceiveEndpoint("BgService", e =>
-                {
-                    e.Consumer<CreateInvoiceFileConsumer>();
-                });
-            });
-
             var source = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-
             await _busControl.StartAsync(source.Token);
-            Console.WriteLine("Running");
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

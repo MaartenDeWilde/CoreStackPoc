@@ -12,9 +12,9 @@ namespace Web.Controllers
     public class InvoiceController : ControllerBase
     {
         private readonly IBus _bus;
-        private readonly IInvoiceContext ctx;
+        private readonly InvoiceContext ctx;
 
-        public InvoiceController(IBus bus, IInvoiceContext ctx)
+        public InvoiceController(IBus bus, InvoiceContext ctx)
         {
             this._bus = bus;
             this.ctx = ctx;

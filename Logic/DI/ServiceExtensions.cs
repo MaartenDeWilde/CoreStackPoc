@@ -7,7 +7,7 @@ namespace Logic.DI
     {
         public static void AddServices(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddDbContext<IInvoiceContext, InvoiceContext>();
+            serviceCollection.AddDbContext<InvoiceContext>();
         }
     }
 }
