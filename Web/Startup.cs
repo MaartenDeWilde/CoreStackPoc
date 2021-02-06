@@ -1,3 +1,4 @@
+using Logic.DI;
 using MassTransit;
 using MassTransit.RabbitMqTransport;
 using Microsoft.AspNetCore.Builder;
@@ -28,7 +29,7 @@ namespace Web
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddServices();
             services.AddMassTransit(x =>
             {
                 x.UsingRabbitMq((r,c) =>
@@ -36,6 +37,7 @@ namespace Web
                     c.Host(this.Configuration.GetConnectionString("RabbitMq"));
                 });
             });
+
 
             services.AddMassTransitHostedService();
 

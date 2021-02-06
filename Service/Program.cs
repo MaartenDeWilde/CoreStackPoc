@@ -6,6 +6,7 @@ using Service.Handlers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Logic.DI;
 
 namespace Service
 {
@@ -21,12 +22,7 @@ namespace Service
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    IConfigurationRoot configuration = new ConfigurationBuilder()
-                     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                     .AddJsonFile("appsettings.json")
-                     .Build();
-
-                    services.AddSingleton(configuration);
+                    services.AddServices();
                     services.AddHostedService<MassTransitService>();
                 });
     }

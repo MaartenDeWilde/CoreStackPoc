@@ -10,10 +10,10 @@ namespace Service
 {
     public class MassTransitService : IHostedService
     {
-        private readonly IConfigurationRoot configuration;
+        private readonly IConfiguration configuration;
         private IBusControl _busControl;
 
-        public MassTransitService(IConfigurationRoot configuration)
+        public MassTransitService(IConfiguration configuration)
         {
             this.configuration = configuration;
         }

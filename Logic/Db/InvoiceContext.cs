@@ -5,18 +5,21 @@ using System;
 
 namespace Logic.Db
 {
-    public class InvoiceContext : DbContext
+    public class InvoiceContext : DbContext, IInvoiceContext
     {
+        private readonly IConfiguration configuration;
+
+        public InvoiceContext(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
         public DbSet<Invoice> Invoices { get; set; }
 
         public DbSet<InvoiceItem> InvoiceItems { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            .AddJsonFile("appsettings.json")
-            .Build();
             optionsBuilder.UseMySQL(configuration.GetConnectionString("DefaultConnection"));
         }
 

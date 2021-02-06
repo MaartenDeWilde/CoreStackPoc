@@ -10,10 +10,15 @@ namespace Service.Handlers
 {
     public class CreateInvoiceFileConsumer : IConsumer<CreateInvoiceFile>
     {
+        private readonly IInvoiceContext dataContext;
+
+        public CreateInvoiceFileConsumer(IInvoiceContext dataContext)
+        {
+            this.dataContext = dataContext;
+        }
+
         public Task Consume(ConsumeContext<CreateInvoiceFile> context)
         {
-            using (var dataContext = new InvoiceContext())
-            {
                 var invoice = dataContext.Invoices.Find(context.Message.InvoiceId);
                 var memoryStream = new MemoryStream();
                 using (var document = new SLDocument())
@@ -24,7 +29,6 @@ namespace Service.Handlers
                 memoryStream.Position = 0;
                 invoice.File = memoryStream.ToArray();
                 dataContext.SaveChanges();
-            }
             return Task.CompletedTask;
         }
 
