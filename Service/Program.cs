@@ -3,41 +3,31 @@ using MassTransit;
 using System.Threading;
 using System.Threading.Tasks;
 using Service.Handlers;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace Service
 {
     class Program
     {
 
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
-            var busControl = Bus.Factory.CreateUsingRabbitMq(cfg =>
-            {
-                cfg.Host("rabbitmq://192.168.0.121:32773");
-                cfg.ReceiveEndpoint("BgService", e =>
-                {
-                    e.Consumer<CreateInvoiceFileConsumer>();
-                });
-            });
-
-            var source = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-
-            await busControl.StartAsync(source.Token);
-            try
-            {
-                Console.WriteLine("Press enter to exit");
-
-                await Task.Run(() => Console.ReadLine());
-            }
-            finally
-            {
-                await busControl.StopAsync();
-            }
+            CreateHostBuilder(args).Build().Run();
         }
 
-        
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureServices((hostContext, services) =>
+                {
+                    IConfigurationRoot configuration = new ConfigurationBuilder()
+                     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                     .AddJsonFile("appsettings.json")
+                     .Build();
 
-
-
+                    services.AddSingleton(configuration);
+                    services.AddHostedService<MassTransitService>();
+                });
     }
 }

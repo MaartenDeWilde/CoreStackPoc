@@ -23,10 +23,7 @@ namespace Service.Handlers
                 }
                 memoryStream.Position = 0;
                 invoice.File = memoryStream.ToArray();
-                Console.WriteLine($"Generated {invoice.Id}!");
-
                 dataContext.SaveChanges();
-
             }
             return Task.CompletedTask;
         }
