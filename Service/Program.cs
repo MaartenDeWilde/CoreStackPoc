@@ -1,46 +1,41 @@
 ﻿using System;
-using NServiceBus;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
+using MassTransit;
+using System.Threading;
+using System.Threading.Tasks;
+using Service.Handlers;
 
 namespace Service
 {
     class Program
     {
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
-        }
-
-        static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                     .AddJsonFile("appsettings.json")
-                     .Build();
-
-            return Host.CreateDefaultBuilder(args)
-                .UseConsoleLifetime()
-                .ConfigureLogging(logging =>
+            var busControl = Bus.Factory.CreateUsingRabbitMq(cfg =>
+            {
+                cfg.Host("rabbitmq://192.168.0.121:32773");
+                cfg.ReceiveEndpoint("BgService", e =>
                 {
-                    logging.AddConsole();
-                    logging.SetMinimumLevel(LogLevel.Information);
-                })
-                .UseNServiceBus(ctx =>
-                {
-                    var endpointConfiguration = new EndpointConfiguration("NsbHost");
-                    var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
-                    transport.ConnectionString(configuration.GetConnectionString("RabbitMQ")  );
-                    transport.UseConventionalRoutingTopology();
-                    endpointConfiguration.UseSerialization<NewtonsoftSerializer>();
-                    endpointConfiguration.EnableInstallers();
-                    return endpointConfiguration;
+                    e.Consumer<CreateInvoiceFileConsumer>();
                 });
+            });
+
+            var source = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+            await busControl.StartAsync(source.Token);
+            try
+            {
+                Console.WriteLine("Press enter to exit");
+
+                await Task.Run(() => Console.ReadLine());
+            }
+            finally
+            {
+                await busControl.StopAsync();
+            }
         }
 
+        
 
 
 

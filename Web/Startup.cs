@@ -1,3 +1,5 @@
+using MassTransit;
+using MassTransit.RabbitMqTransport;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +19,17 @@ namespace Web
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((r,c) =>
+                {
+                    c.Host("rabbitmq://192.168.0.121:32773");
+                });
+            });
+
+            services.AddMassTransitHostedService();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

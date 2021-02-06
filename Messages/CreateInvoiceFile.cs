@@ -1,9 +1,9 @@
-﻿using NServiceBus;
+﻿
 using System;
 
 namespace Messages
 {
-    public class CreateInvoiceFile : IMessage
+    public class CreateInvoiceFile 
     {
         public int InvoiceId { get; set; }
     }

@@ -1,8 +1,8 @@
 ﻿using Logic.Db;
 using Logic.Model;
+using MassTransit;
 using Messages;
 using Microsoft.AspNetCore.Mvc;
-using NServiceBus;
 using System.IO;
 
 namespace Web.Controllers
@@ -11,11 +11,11 @@ namespace Web.Controllers
     [Route("api/invoice")]
     public class InvoiceController : ControllerBase
     {
-        private readonly IMessageSession messageSession;
+        private readonly IBus _bus;
 
-        public InvoiceController(IMessageSession messageSession)
+        public InvoiceController(IBus bus)
         {
-            this.messageSession = messageSession;
+            this._bus = bus;
         }
 
         [HttpGet, Route("generate")]
@@ -27,7 +27,7 @@ namespace Web.Controllers
                 ctx.Invoices.Add(invoice);
                 ctx.SaveChanges();
 
-                await messageSession.Send(new CreateInvoiceFile() { InvoiceId = invoice.Id });
+                await _bus.Publish(new CreateInvoiceFile() { InvoiceId = invoice.Id });
             }
         }
 

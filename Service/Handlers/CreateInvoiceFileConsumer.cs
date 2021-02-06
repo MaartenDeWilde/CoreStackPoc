@@ -1,19 +1,20 @@
 ﻿using Logic.Db;
+using MassTransit;
 using Messages;
-using NServiceBus;
 using SpreadsheetLight;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
 namespace Service.Handlers
 {
-    public class CreateInvoiceFileHandler : IHandleMessages<CreateInvoiceFile>
+    public class CreateInvoiceFileConsumer : IConsumer<CreateInvoiceFile>
     {
-        public Task Handle(CreateInvoiceFile message, IMessageHandlerContext context)
+        public Task Consume(ConsumeContext<CreateInvoiceFile> context)
         {
             using (var dataContext = new InvoiceContext())
             {
-                var invoice = dataContext.Invoices.Find(message.InvoiceId);
+                var invoice = dataContext.Invoices.Find(context.Message.InvoiceId);
                 var memoryStream = new MemoryStream();
                 using (var document = new SLDocument())
                 {
@@ -22,9 +23,14 @@ namespace Service.Handlers
                 }
                 memoryStream.Position = 0;
                 invoice.File = memoryStream.ToArray();
+                Console.WriteLine($"Generated {invoice.Id}!");
+
                 dataContext.SaveChanges();
+
             }
             return Task.CompletedTask;
         }
+
+    
     }
 }
