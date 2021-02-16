@@ -4,6 +4,7 @@ using MassTransit;
 using Messages;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Web.Controllers
 {
@@ -21,13 +22,15 @@ namespace Web.Controllers
         }
 
         [HttpGet, Route("generate")]
-        public async void Generate()
+        public async Task<int> Generate()
         {
             var invoice = new Invoice() { Customer = "Test" };
             ctx.Invoices.Add(invoice);
             ctx.SaveChanges();
 
             await _bus.Publish(new CreateInvoiceFile() { InvoiceId = invoice.Id });
+
+            return invoice.Id;
         }
 
         [HttpGet, Route("download/{invoiceId}")]
